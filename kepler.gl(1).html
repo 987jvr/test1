@@ -1,0 +1,229 @@
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8"/>
+        <title>Kepler.gl embedded map</title>
+
+        <!--Uber Font-->
+        <link rel="stylesheet" href="https://d1a3f4spazzrp4.cloudfront.net/kepler.gl/uber-fonts/4.0.0/superfine.css">
+
+        <!--MapBox css-->
+        <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.1/mapbox-gl.css" rel="stylesheet">
+
+        <!-— facebook open graph tags -->
+        <meta property="og:url" content="http://kepler.gl/" />
+        <meta property="og:title" content="Large-scale WebGL-powered Geospatial Data Visualization Tool" />
+        <meta property="og:description" content="Kepler.gl is a powerful web-based geospatial data analysis tool. Built on a high performance rendering engine and designed for large-scale data sets." />
+        <meta property="og:site_name" content="kepler.gl" />
+        <meta property="og:image" content="https://d1a3f4spazzrp4.cloudfront.net/kepler.gl/kepler.gl-meta-tag.png" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="800" />
+        <meta property="og:image:height" content="800" />
+
+        <!-— twitter card tags -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@uber">
+        <meta name="twitter:creator" content="@uber">
+        <meta name="twitter:title" content="Large-scale WebGL-powered Geospatial Data Visualization Tool">
+        <meta name="twitter:description" content="Kepler.gl is a powerful web-based geospatial data analysis tool. Built on a high performance rendering engine and designed for large-scale data sets.">
+        <meta name="twitter:image" content="https://d1a3f4spazzrp4.cloudfront.net/kepler.gl/kepler.gl-meta-tag.png" />
+
+        <!-- Load React/Redux -->
+        <script src="https://unpkg.com/react@16.8.4/umd/react.production.min.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16.8.4/umd/react-dom.production.min.js" crossorigin></script>
+        <script src="https://unpkg.com/redux@3.7.2/dist/redux.js" crossorigin></script>
+        <script src="https://unpkg.com/react-redux@7.1.3/dist/react-redux.min.js" crossorigin></script>
+        <script src="https://unpkg.com/styled-components@4.1.3/dist/styled-components.min.js" crossorigin></script>
+
+        <!-- Load Kepler.gl -->
+        <script src="https://unpkg.com/kepler.gl@2.5.5/umd/keplergl.min.js" crossorigin></script>
+
+        <style type="text/css">
+          body {margin: 0; padding: 0; overflow: hidden;}
+        </style>
+
+        <!--MapBox token-->
+        <script>
+          /**
+           * Provide your MapBox Token
+           **/
+          const MAPBOX_TOKEN = 'pk.eyJ1IjoidWNmLW1hcGJveCIsImEiOiJja3RpeXpzd2oxNzNtMm9wYXQ4enY1bGJ5In0.PEZqaPuuhzPDN9RneRscqQ';
+          const WARNING_MESSAGE = 'Please Provide a Mapbox Token in order to use Kepler.gl. Edit this file and fill out MAPBOX_TOKEN with your access key';
+        </script>
+
+        <!-- GA: Delete this as you wish, However to pat ourselves on the back, we only track anonymous pageview to understand how many people are using kepler.gl. -->
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+          ga('create', 'UA-64694404-19', {
+            'storage': 'none',
+            'clientId': localStorage.getItem('ga:clientId')
+          });
+          ga(function(tracker) {
+              localStorage.setItem('ga:clientId', tracker.get('clientId'));
+          });
+          ga('set', 'checkProtocolTask', null); // Disable file protocol checking.
+          ga('set', 'checkStorageTask', null); // Disable cookie storage checking.
+          ga('set', 'historyImportTask', null); // Disable history checking (requires reading from cookies).
+          ga('set', 'page', 'keplergl-html');
+          ga('send', 'pageview');
+        </script>
+      </head>
+      <body>
+        <!-- We will put our React component inside this div. -->
+        <div id="app">
+          <!-- Kepler.gl map will be placed here-->
+        </div>
+
+        <!-- Load our React component. -->
+        <script>
+          /* Validate Mapbox Token */
+          if ((MAPBOX_TOKEN || '') === '' || MAPBOX_TOKEN === 'PROVIDE_MAPBOX_TOKEN') {
+            alert(WARNING_MESSAGE);
+          }
+
+          /** STORE **/
+          const reducers = (function createReducers(redux, keplerGl) {
+            return redux.combineReducers({
+              // mount keplerGl reducer
+              keplerGl: keplerGl.keplerGlReducer.initialState({
+                uiState: {
+                  readOnly: true,
+                  currentModal: null
+                }
+              })
+            });
+          }(Redux, KeplerGl));
+
+          const middleWares = (function createMiddlewares(keplerGl) {
+            return keplerGl.enhanceReduxMiddleware([
+              // Add other middlewares here
+            ]);
+          }(KeplerGl));
+
+          const enhancers = (function craeteEnhancers(redux, middles) {
+            return redux.applyMiddleware(...middles);
+          }(Redux, middleWares));
+
+          const store = (function createStore(redux, enhancers) {
+            const initialState = {};
+
+            return redux.createStore(
+              reducers,
+              initialState,
+              redux.compose(enhancers)
+            );
+          }(Redux, enhancers));
+          /** END STORE **/
+
+          /** COMPONENTS **/
+          var KeplerElement = (function makeKeplerElement(react, keplerGl, mapboxToken) {
+            var LogoSvg = function LogoSvg() {
+              return react.createElement(
+                "div",
+                { className: "logo-container", style: {position: 'fixed', zIndex: 10000, padding: '4px'} },
+                  react.createElement(
+                    "svg",
+                    {
+                      className: "kepler_gl__logo",
+                      width: "107px",
+                      height: "21px",
+                      viewBox: "0 0 124 24"
+                    },
+                    react.createElement(
+                      "g",
+                      { transform: "translate(13.500000, 13.500000) rotate(45.000000) translate(-13.500000, -13.500000) translate(4.000000, 4.000000)" },
+                      react.createElement("rect", { x: "0", y: "6", transform: "matrix(2.535181e-06 1 -1 2.535181e-06 18.1107 6.0369)", fill: "#535C6C", width: "12.1", height: "12.1" }),
+                      react.createElement("rect", { x: "6", y: "0", transform: "matrix(2.535182e-06 1 -1 2.535182e-06 18.1107 -6.0369)", fill:"#1FBAD6", width: "12.1", height: "12.1" })
+                    ),
+                    react.createElement(
+                      "g",
+                      {},
+                      react.createElement("path", { fill:"#1FBAD6", d: "M39,8.7h2.2l-2.8,4.2l2.9,5.1H39l-2.4-4.2h-1.3V18h-2V5l2-0.1v7.3h1.3L39,8.7z" }),
+                      react.createElement("path", { fill:"#1FBAD6", d: "M42.4,13.3c0-1.5,0.4-2.7,1.1-3.5s1.8-1.2,3.1-1.2c1.3,0,2.2,0.4,2.8,1.1c0.6,0.7,0.9,1.8,0.9,3.3 c0,0.4,0,0.8,0,1.1h-5.8c0,1.6,0.8,2.4,2.4,2.4c1,0,2-0.2,2.9-0.6l0.2,1.7c-0.4,0.2-0.9,0.4-1.4,0.5s-1.1,0.2-1.7,0.2 c-1.5,0-2.6-0.4-3.3-1.2C42.8,16.1,42.4,14.9,42.4,13.3z M46.6,10.1c-0.7,0-1.2,0.2-1.5,0.5c-0.4,0.4-0.6,0.9-0.6,1.7h4 c0-0.8-0.2-1.4-0.5-1.7S47.2,10.1,46.6,10.1z" }),
+                      react.createElement("path", { fill:"#1FBAD6", d: "M57.1,18.2c-1,0-1.8-0.3-2.3-0.9l0,0l0,1.3v2.5h-2V8.7h1.5l0.3,0.9h0c0.3-0.3,0.7-0.6,1.2-0.7 c0.4-0.2,0.9-0.3,1.4-0.3c1.2,0,2.1,0.4,2.7,1.1c0.6,0.7,0.9,2,0.9,3.7c0,1.6-0.3,2.8-1,3.7C59.2,17.8,58.3,18.2,57.1,18.2z M56.7,10.3c-0.4,0-0.8,0.1-1.1,0.2c-0.3,0.2-0.6,0.4-0.8,0.7v4.3c0.2,0.3,0.4,0.5,0.7,0.7c0.3,0.2,0.7,0.3,1.1,0.3 c0.7,0,1.2-0.2,1.6-0.7c0.4-0.5,0.5-1.3,0.5-2.5c0-0.8-0.1-1.4-0.2-1.8s-0.4-0.7-0.7-0.9C57.6,10.4,57.2,10.3,56.7,10.3z" }),
+                      react.createElement("path", { fill:"#1FBAD6", d: "M63.2,16V5l2-0.1v10.8c0,0.3,0.1,0.5,0.2,0.6c0.1,0.1,0.3,0.2,0.6,0.2c0.3,0,0.6,0,0.9-0.1V18 c-0.4,0.1-1,0.2-1.6,0.2c-0.8,0-1.3-0.2-1.7-0.5S63.2,16.8,63.2,16z" }),
+                      react.createElement("path", { fill:"#1FBAD6", d: "M68.2,13.3c0-1.5,0.4-2.7,1.1-3.5c0.7-0.8,1.8-1.2,3.1-1.2c1.3,0,2.2,0.4,2.8,1.1c0.6,0.7,0.9,1.8,0.9,3.3 c0,0.4,0,0.8,0,1.1h-5.8c0,1.6,0.8,2.4,2.4,2.4c1,0,2-0.2,2.9-0.6l0.2,1.7c-0.4,0.2-0.9,0.4-1.4,0.5s-1.1,0.2-1.7,0.2 c-1.5,0-2.6-0.4-3.3-1.2C68.6,16.1,68.2,14.9,68.2,13.3z M72.4,10.1c-0.7,0-1.2,0.2-1.5,0.5c-0.4,0.4-0.6,0.9-0.6,1.7h4 c0-0.8-0.2-1.4-0.5-1.7S73,10.1,72.4,10.1z" }),
+                      react.createElement("path", { fill:"#1FBAD6", d: "M80.2,8.7l0.1,1.7h0c0.3-0.6,0.7-1.1,1.1-1.4c0.4-0.3,1-0.5,1.6-0.5c0.4,0,0.7,0,1,0.1l-0.1,2 c-0.3-0.1-0.7-0.2-1-0.2c-0.7,0-1.3,0.3-1.7,0.8c-0.4,0.5-0.7,1.2-0.7,2.1V18h-2V8.7H80.2z" }),
+                      react.createElement("path", { fill:"#1FBAD6", d: "M83.8,17c0-0.8,0.4-1.2,1.2-1.2c0.8,0,1.2,0.4,1.2,1.2c0,0.8-0.4,1.1-1.2,1.1C84.2,18.2,83.8,17.8,83.8,17z" }),
+                      react.createElement("path", { fill:"#1FBAD6", d: "M88.5,18.7c0-0.8,0.4-1.4,1.2-1.8c-0.6-0.3-0.9-0.8-0.9-1.5c0-0.7,0.4-1.2,1.1-1.6c-0.3-0.3-0.6-0.6-0.7-0.9 c-0.2-0.4-0.2-0.8-0.2-1.3c0-1,0.3-1.8,0.9-2.3c0.6-0.5,1.6-0.8,2.8-0.8c0.5,0,1,0,1.4,0.1c0.4,0.1,0.8,0.2,1.1,0.4l2.4-0.2v1.5 h-1.5c0.2,0.4,0.2,0.8,0.2,1.3c0,1-0.3,1.7-0.9,2.2s-1.5,0.8-2.7,0.8c-0.7,0-1.2-0.1-1.6-0.2c-0.1,0.1-0.2,0.2-0.3,0.3 c-0.1,0.1-0.1,0.2-0.1,0.4c0,0.2,0.1,0.3,0.2,0.4c0.1,0.1,0.3,0.2,0.6,0.2l2.7,0.2c1,0.1,1.7,0.3,2.2,0.6c0.5,0.3,0.8,0.9,0.8,1.7 c0,0.6-0.2,1.1-0.5,1.5c-0.4,0.4-0.9,0.8-1.5,1c-0.7,0.2-1.5,0.4-2.4,0.4c-1.3,0-2.3-0.2-3-0.6C88.8,20.1,88.5,19.5,88.5,18.7z M95.1,18.4c0-0.3-0.1-0.5-0.3-0.7s-0.6-0.2-1.1-0.3l-2.7-0.3c-0.2,0.1-0.4,0.3-0.5,0.5c-0.1,0.2-0.2,0.4-0.2,0.6 c0,0.4,0.2,0.8,0.5,1c0.4,0.2,1,0.3,1.8,0.3C94.2,19.5,95.1,19.2,95.1,18.4z M94.3,11.5c0-0.6-0.1-1-0.4-1.2 c-0.3-0.2-0.7-0.3-1.3-0.3c-0.7,0-1.1,0.1-1.4,0.3c-0.3,0.2-0.4,0.6-0.4,1.2s0.1,1,0.4,1.2c0.3,0.2,0.7,0.3,1.4,0.3 c0.6,0,1.1-0.1,1.3-0.4S94.3,12,94.3,11.5z" }),
+                      react.createElement("path", { fill:"#1FBAD6", d: "M99.4,16V5l2-0.1v10.8c0,0.3,0.1,0.5,0.2,0.6c0.1,0.1,0.3,0.2,0.6,0.2c0.3,0,0.6,0,0.9-0.1V18 c-0.4,0.1-1,0.2-1.6,0.2c-0.8,0-1.3-0.2-1.7-0.5S99.4,16.8,99.4,16z" })
+                    )
+                  )
+                );
+              };
+
+            return function App() {
+              var rootElm = react.useRef(null);
+              var _useState = react.useState({
+                width: window.innerWidth,
+                height: window.innerHeight
+              });
+              var windowDimension = _useState[0];
+              var setDimension = _useState[1];
+              react.useEffect(function sideEffect(){
+                function handleResize() {
+                  setDimension({width: window.innerWidth, height: window.innerHeight});
+                };
+                window.addEventListener('resize', handleResize);
+                return function() {window.removeEventListener('resize', handleResize);};
+              }, []);
+              return react.createElement(
+                'div',
+                {style: {position: 'absolute', left: 0, width: '100vw', height: '100vh'}},
+                LogoSvg(),
+                react.createElement(keplerGl.KeplerGl, {
+                  mapboxApiAccessToken: mapboxToken,
+                  id: "map",
+                  width: windowDimension.width,
+                  height: windowDimension.height
+                })
+              )
+            }
+          }(React, KeplerGl, MAPBOX_TOKEN));
+
+          const app = (function createReactReduxProvider(react, reactRedux, KeplerElement) {
+            return react.createElement(
+              reactRedux.Provider,
+              {store},
+              react.createElement(KeplerElement, null)
+            )
+          }(React, ReactRedux, KeplerElement));
+          /** END COMPONENTS **/
+
+          /** Render **/
+          (function render(react, reactDOM, app) {
+            reactDOM.render(app, document.getElementById('app'));
+          }(React, ReactDOM, app));
+        </script>
+        <!-- The next script will show how to interact directly with Kepler map store -->
+        <script>
+          /**
+           * Customize map.
+           * In the following section you can use the store object to dispatch Kepler.gl actions
+           * to add new data and customize behavior
+           */
+          (function customize(keplerGl, store) {
+            const datasets = [{"version":"v1","data":{"id":"jfhqg2r5b","label":"puntos.geojson","color":[0,92,255],"allData":[[{"type":"Feature","properties":{"index":"MAX_0612.JPG","LAT":42.807087213555555,"LONG":-1.4822722735},"geometry":{"type":"Point","coordinates":[-1.4822722735,42.807087213555555]}},"MAX_0612.JPG",42.807087213555555,-1.4822722735],[{"type":"Feature","properties":{"index":"MAX_0613.JPG","LAT":42.807063747638885,"LONG":-1.482186638972222},"geometry":{"type":"Point","coordinates":[-1.482186638972222,42.807063747638885]}},"MAX_0613.JPG",42.807063747638885,-1.482186638972222],[{"type":"Feature","properties":{"index":"MAX_0614.JPG","LAT":42.80703883297222,"LONG":-1.482095061416667},"geometry":{"type":"Point","coordinates":[-1.482095061416667,42.80703883297222]}},"MAX_0614.JPG",42.80703883297222,-1.482095061416667],[{"type":"Feature","properties":{"index":"MAX_0615.JPG","LAT":42.807013976166665,"LONG":-1.482000247833333},"geometry":{"type":"Point","coordinates":[-1.482000247833333,42.807013976166665]}},"MAX_0615.JPG",42.807013976166665,-1.482000247833333],[{"type":"Feature","properties":{"index":"MAX_0616.JPG","LAT":42.806989716472216,"LONG":-1.48190914075},"geometry":{"type":"Point","coordinates":[-1.48190914075,42.806989716472216]}},"MAX_0616.JPG",42.806989716472216,-1.48190914075],[{"type":"Feature","properties":{"index":"MAX_0617.JPG","LAT":42.8069648705,"LONG":-1.481815523694445},"geometry":{"type":"Point","coordinates":[-1.481815523694445,42.806964870499996]}},"MAX_0617.JPG",42.8069648705,-1.481815523694445],[{"type":"Feature","properties":{"index":"MAX_0618.JPG","LAT":42.80694080888889,"LONG":-1.481726176083333},"geometry":{"type":"Point","coordinates":[-1.481726176083333,42.80694080888889]}},"MAX_0618.JPG",42.80694080888889,-1.481726176083333],[{"type":"Feature","properties":{"index":"MAX_0619.JPG","LAT":42.80691614105555,"LONG":-1.481631713388889},"geometry":{"type":"Point","coordinates":[-1.481631713388889,42.80691614105555]}},"MAX_0619.JPG",42.80691614105555,-1.481631713388889],[{"type":"Feature","properties":{"index":"MAX_0620.JPG","LAT":42.80689207847222,"LONG":-1.481539767194445},"geometry":{"type":"Point","coordinates":[-1.481539767194445,42.80689207847222]}},"MAX_0620.JPG",42.80689207847222,-1.481539767194445],[{"type":"Feature","properties":{"index":"MAX_0621.JPG","LAT":42.80686709325,"LONG":-1.481445742361111},"geometry":{"type":"Point","coordinates":[-1.481445742361111,42.80686709325]}},"MAX_0621.JPG",42.80686709325,-1.481445742361111],[{"type":"Feature","properties":{"index":"MAX_0622.JPG","LAT":42.80684202475,"LONG":-1.481352228888889},"geometry":{"type":"Point","coordinates":[-1.481352228888889,42.80684202475]}},"MAX_0622.JPG",42.80684202475,-1.481352228888889],[{"type":"Feature","properties":{"index":"MAX_0623.JPG","LAT":42.806816559527775,"LONG":-1.481259196916667},"geometry":{"type":"Point","coordinates":[-1.481259196916667,42.806816559527775]}},"MAX_0623.JPG",42.806816559527775,-1.481259196916667],[{"type":"Feature","properties":{"index":"MAX_0624.JPG","LAT":42.80679160366667,"LONG":-1.481166993388889},"geometry":{"type":"Point","coordinates":[-1.481166993388889,42.80679160366667]}},"MAX_0624.JPG",42.80679160366667,-1.481166993388889],[{"type":"Feature","properties":{"index":"MAX_0625.JPG","LAT":42.80676704755555,"LONG":-1.481074202583333},"geometry":{"type":"Point","coordinates":[-1.481074202583333,42.80676704755555]}},"MAX_0625.JPG",42.80676704755555,-1.481074202583333],[{"type":"Feature","properties":{"index":"MAX_0626.JPG","LAT":42.80674308180555,"LONG":-1.480985298027778},"geometry":{"type":"Point","coordinates":[-1.480985298027778,42.80674308180555]}},"MAX_0626.JPG",42.80674308180555,-1.480985298027778],[{"type":"Feature","properties":{"index":"MAX_0627.JPG","LAT":42.806718982,"LONG":-1.480891768},"geometry":{"type":"Point","coordinates":[-1.480891768,42.806718982]}},"MAX_0627.JPG",42.806718982,-1.480891768],[{"type":"Feature","properties":{"index":"MAX_0628.JPG","LAT":42.80669453536111,"LONG":-1.480798085361111},"geometry":{"type":"Point","coordinates":[-1.480798085361111,42.80669453536111]}},"MAX_0628.JPG",42.80669453536111,-1.480798085361111],[{"type":"Feature","properties":{"index":"MAX_0629.JPG","LAT":42.806669612499995,"LONG":-1.480706060916667},"geometry":{"type":"Point","coordinates":[-1.480706060916667,42.806669612499995]}},"MAX_0629.JPG",42.806669612499995,-1.480706060916667],[{"type":"Feature","properties":{"index":"MAX_0630.JPG","LAT":42.80664469611111,"LONG":-1.480611138972222},"geometry":{"type":"Point","coordinates":[-1.480611138972222,42.80664469611111]}},"MAX_0630.JPG",42.80664469611111,-1.480611138972222],[{"type":"Feature","properties":{"index":"MAX_0631.JPG","LAT":42.80662146,"LONG":-1.480521292527778},"geometry":{"type":"Point","coordinates":[-1.480521292527778,42.80662146]}},"MAX_0631.JPG",42.80662146,-1.480521292527778],[{"type":"Feature","properties":{"index":"MAX_0632.JPG","LAT":42.80659615244444,"LONG":-1.480429094},"geometry":{"type":"Point","coordinates":[-1.480429094,42.80659615244444]}},"MAX_0632.JPG",42.80659615244444,-1.480429094],[{"type":"Feature","properties":{"index":"MAX_0633.JPG","LAT":42.80657011536111,"LONG":-1.480333693972222},"geometry":{"type":"Point","coordinates":[-1.480333693972222,42.80657011536111]}},"MAX_0633.JPG",42.80657011536111,-1.480333693972222],[{"type":"Feature","properties":{"index":"MAX_0634.JPG","LAT":42.80654741569444,"LONG":-1.480247770138889},"geometry":{"type":"Point","coordinates":[-1.480247770138889,42.80654741569444]}},"MAX_0634.JPG",42.80654741569444,-1.480247770138889],[{"type":"Feature","properties":{"index":"MAX_0635.JPG","LAT":42.80639416355555,"LONG":-1.480325587138889},"geometry":{"type":"Point","coordinates":[-1.480325587138889,42.80639416355555]}},"MAX_0635.JPG",42.80639416355555,-1.480325587138889],[{"type":"Feature","properties":{"index":"MAX_0636.JPG","LAT":42.80641506519444,"LONG":-1.480408260388889},"geometry":{"type":"Point","coordinates":[-1.480408260388889,42.80641506519444]}},"MAX_0636.JPG",42.80641506519444,-1.480408260388889],[{"type":"Feature","properties":{"index":"MAX_0637.JPG","LAT":42.806437865861106,"LONG":-1.480501533166667},"geometry":{"type":"Point","coordinates":[-1.480501533166667,42.806437865861106]}},"MAX_0637.JPG",42.806437865861106,-1.480501533166667],[{"type":"Feature","properties":{"index":"MAX_0638.JPG","LAT":42.806464074249995,"LONG":-1.480592148},"geometry":{"type":"Point","coordinates":[-1.480592148,42.806464074249995]}},"MAX_0638.JPG",42.806464074249995,-1.480592148],[{"type":"Feature","properties":{"index":"MAX_0639.JPG","LAT":42.80648972927777,"LONG":-1.480687396277778},"geometry":{"type":"Point","coordinates":[-1.480687396277778,42.80648972927777]}},"MAX_0639.JPG",42.80648972927777,-1.480687396277778],[{"type":"Feature","properties":{"index":"MAX_0640.JPG","LAT":42.80651323675,"LONG":-1.480779017944445},"geometry":{"type":"Point","coordinates":[-1.480779017944445,42.80651323675]}},"MAX_0640.JPG",42.80651323675,-1.480779017944445],[{"type":"Feature","properties":{"index":"MAX_0641.JPG","LAT":42.80653908252778,"LONG":-1.480874430861111},"geometry":{"type":"Point","coordinates":[-1.480874430861111,42.80653908252778]}},"MAX_0641.JPG",42.80653908252778,-1.480874430861111],[{"type":"Feature","properties":{"index":"MAX_0642.JPG","LAT":42.80656283319444,"LONG":-1.480965519944444},"geometry":{"type":"Point","coordinates":[-1.480965519944444,42.80656283319444]}},"MAX_0642.JPG",42.80656283319444,-1.480965519944444],[{"type":"Feature","properties":{"index":"MAX_0643.JPG","LAT":42.80658642911111,"LONG":-1.481056198527778},"geometry":{"type":"Point","coordinates":[-1.481056198527778,42.80658642911111]}},"MAX_0643.JPG",42.80658642911111,-1.481056198527778],[{"type":"Feature","properties":{"index":"MAX_0644.JPG","LAT":42.80661085036111,"LONG":-1.481149554944445},"geometry":{"type":"Point","coordinates":[-1.481149554944445,42.80661085036111]}},"MAX_0644.JPG",42.80661085036111,-1.481149554944445],[{"type":"Feature","properties":{"index":"MAX_0645.JPG","LAT":42.80663437147222,"LONG":-1.48124051175},"geometry":{"type":"Point","coordinates":[-1.48124051175,42.80663437147222]}},"MAX_0645.JPG",42.80663437147222,-1.48124051175],[{"type":"Feature","properties":{"index":"MAX_0646.JPG","LAT":42.806660543305554,"LONG":-1.481334868361111},"geometry":{"type":"Point","coordinates":[-1.481334868361111,42.806660543305554]}},"MAX_0646.JPG",42.806660543305554,-1.481334868361111],[{"type":"Feature","properties":{"index":"MAX_0647.JPG","LAT":42.80668619025,"LONG":-1.481425320972222},"geometry":{"type":"Point","coordinates":[-1.481425320972222,42.80668619025]}},"MAX_0647.JPG",42.80668619025,-1.481425320972222],[{"type":"Feature","properties":{"index":"MAX_0648.JPG","LAT":42.80670977138889,"LONG":-1.48151772625},"geometry":{"type":"Point","coordinates":[-1.48151772625,42.80670977138889]}},"MAX_0648.JPG",42.80670977138889,-1.48151772625],[{"type":"Feature","properties":{"index":"MAX_0649.JPG","LAT":42.80673481838888,"LONG":-1.481614708083334},"geometry":{"type":"Point","coordinates":[-1.481614708083334,42.80673481838888]}},"MAX_0649.JPG",42.80673481838888,-1.481614708083334],[{"type":"Feature","properties":{"index":"MAX_0650.JPG","LAT":42.806760371555555,"LONG":-1.481707092888889},"geometry":{"type":"Point","coordinates":[-1.481707092888889,42.806760371555555]}},"MAX_0650.JPG",42.806760371555555,-1.481707092888889],[{"type":"Feature","properties":{"index":"MAX_0651.JPG","LAT":42.80678385777777,"LONG":-1.481796594416667},"geometry":{"type":"Point","coordinates":[-1.481796594416667,42.80678385777777]}},"MAX_0651.JPG",42.80678385777777,-1.481796594416667],[{"type":"Feature","properties":{"index":"MAX_0652.JPG","LAT":42.80680751925,"LONG":-1.481889966},"geometry":{"type":"Point","coordinates":[-1.481889966,42.80680751925]}},"MAX_0652.JPG",42.80680751925,-1.481889966],[{"type":"Feature","properties":{"index":"MAX_0653.JPG","LAT":42.80683327147222,"LONG":-1.481983879722222},"geometry":{"type":"Point","coordinates":[-1.481983879722222,42.80683327147222]}},"MAX_0653.JPG",42.80683327147222,-1.481983879722222],[{"type":"Feature","properties":{"index":"MAX_0654.JPG","LAT":42.80685853452778,"LONG":-1.4820753845},"geometry":{"type":"Point","coordinates":[-1.4820753845,42.80685853452778]}},"MAX_0654.JPG",42.80685853452778,-1.4820753845],[{"type":"Feature","properties":{"index":"MAX_0655.JPG","LAT":42.80688306575,"LONG":-1.482170425083333},"geometry":{"type":"Point","coordinates":[-1.482170425083333,42.80688306575]}},"MAX_0655.JPG",42.80688306575,-1.482170425083333],[{"type":"Feature","properties":{"index":"MAX_0656.JPG","LAT":42.80690894538888,"LONG":-1.482265357805556},"geometry":{"type":"Point","coordinates":[-1.482265357805556,42.806908945388884]}},"MAX_0656.JPG",42.80690894538888,-1.482265357805556],[{"type":"Feature","properties":{"index":"MAX_0657.JPG","LAT":42.80693275411111,"LONG":-1.482350570416667},"geometry":{"type":"Point","coordinates":[-1.482350570416667,42.80693275411111]}},"MAX_0657.JPG",42.80693275411111,-1.482350570416667],[{"type":"Feature","properties":{"index":"MAX_0658.JPG","LAT":42.806777998027776,"LONG":-1.482423384916667},"geometry":{"type":"Point","coordinates":[-1.482423384916667,42.806777998027776]}},"MAX_0658.JPG",42.806777998027776,-1.482423384916667],[{"type":"Feature","properties":{"index":"MAX_0659.JPG","LAT":42.80675538083333,"LONG":-1.482341078277778},"geometry":{"type":"Point","coordinates":[-1.482341078277778,42.80675538083333]}},"MAX_0659.JPG",42.80675538083333,-1.482341078277778],[{"type":"Feature","properties":{"index":"MAX_0660.JPG","LAT":42.80673066269444,"LONG":-1.482244813555556},"geometry":{"type":"Point","coordinates":[-1.482244813555556,42.80673066269444]}},"MAX_0660.JPG",42.80673066269444,-1.482244813555556],[{"type":"Feature","properties":{"index":"MAX_0661.JPG","LAT":42.80670591077778,"LONG":-1.482153019138889},"geometry":{"type":"Point","coordinates":[-1.482153019138889,42.80670591077777]}},"MAX_0661.JPG",42.80670591077778,-1.482153019138889],[{"type":"Feature","properties":{"index":"MAX_0662.JPG","LAT":42.80668088558333,"LONG":-1.482059951333333},"geometry":{"type":"Point","coordinates":[-1.482059951333333,42.80668088558333]}},"MAX_0662.JPG",42.80668088558333,-1.482059951333333],[{"type":"Feature","properties":{"index":"MAX_0663.JPG","LAT":42.80665598819444,"LONG":-1.481968420527778},"geometry":{"type":"Point","coordinates":[-1.481968420527778,42.80665598819444]}},"MAX_0663.JPG",42.80665598819444,-1.481968420527778],[{"type":"Feature","properties":{"index":"MAX_0664.JPG","LAT":42.80663063297222,"LONG":-1.481871850472222},"geometry":{"type":"Point","coordinates":[-1.481871850472222,42.80663063297222]}},"MAX_0664.JPG",42.80663063297222,-1.481871850472222],[{"type":"Feature","properties":{"index":"MAX_0665.JPG","LAT":42.806607473499994,"LONG":-1.481782900138889},"geometry":{"type":"Point","coordinates":[-1.481782900138889,42.806607473499994]}},"MAX_0665.JPG",42.806607473499994,-1.481782900138889],[{"type":"Feature","properties":{"index":"MAX_0666.JPG","LAT":42.80658321669444,"LONG":-1.481690404888889},"geometry":{"type":"Point","coordinates":[-1.481690404888889,42.80658321669444]}},"MAX_0666.JPG",42.80658321669444,-1.481690404888889],[{"type":"Feature","properties":{"index":"MAX_0667.JPG","LAT":42.80655897905555,"LONG":-1.481600330722222},"geometry":{"type":"Point","coordinates":[-1.481600330722222,42.80655897905555]}},"MAX_0667.JPG",42.80655897905555,-1.481600330722222],[{"type":"Feature","properties":{"index":"MAX_0668.JPG","LAT":42.80653223066666,"LONG":-1.481502439833333},"geometry":{"type":"Point","coordinates":[-1.481502439833333,42.80653223066666]}},"MAX_0668.JPG",42.80653223066666,-1.481502439833333],[{"type":"Feature","properties":{"index":"MAX_0669.JPG","LAT":42.80650919513889,"LONG":-1.481413427555556},"geometry":{"type":"Point","coordinates":[-1.481413427555556,42.80650919513889]}},"MAX_0669.JPG",42.80650919513889,-1.481413427555556],[{"type":"Feature","properties":{"index":"MAX_0670.JPG","LAT":42.80648418102778,"LONG":-1.481318727083333},"geometry":{"type":"Point","coordinates":[-1.481318727083333,42.80648418102778]}},"MAX_0670.JPG",42.80648418102778,-1.481318727083333],[{"type":"Feature","properties":{"index":"MAX_0671.JPG","LAT":42.80645985897222,"LONG":-1.481228499277778},"geometry":{"type":"Point","coordinates":[-1.481228499277778,42.80645985897222]}},"MAX_0671.JPG",42.80645985897222,-1.481228499277778],[{"type":"Feature","properties":{"index":"MAX_0672.JPG","LAT":42.80643601499999,"LONG":-1.481139234027778},"geometry":{"type":"Point","coordinates":[-1.481139234027778,42.806436015]}},"MAX_0672.JPG",42.80643601499999,-1.481139234027778],[{"type":"Feature","properties":{"index":"MAX_0673.JPG","LAT":42.80641009058333,"LONG":-1.481040776583334},"geometry":{"type":"Point","coordinates":[-1.481040776583334,42.80641009058333]}},"MAX_0673.JPG",42.80641009058333,-1.481040776583334],[{"type":"Feature","properties":{"index":"MAX_0674.JPG","LAT":42.80638611577778,"LONG":-1.480950644055556},"geometry":{"type":"Point","coordinates":[-1.480950644055556,42.80638611577778]}},"MAX_0674.JPG",42.80638611577778,-1.480950644055556],[{"type":"Feature","properties":{"index":"MAX_0675.JPG","LAT":42.80636163213889,"LONG":-1.480859039},"geometry":{"type":"Point","coordinates":[-1.480859039,42.80636163213889]}},"MAX_0675.JPG",42.80636163213889,-1.480859039],[{"type":"Feature","properties":{"index":"MAX_0676.JPG","LAT":42.80633644286111,"LONG":-1.480766166722222},"geometry":{"type":"Point","coordinates":[-1.480766166722222,42.80633644286111]}},"MAX_0676.JPG",42.80633644286111,-1.480766166722222],[{"type":"Feature","properties":{"index":"MAX_0677.JPG","LAT":42.80631154869444,"LONG":-1.480671509138889},"geometry":{"type":"Point","coordinates":[-1.480671509138889,42.80631154869444]}},"MAX_0677.JPG",42.80631154869444,-1.480671509138889],[{"type":"Feature","properties":{"index":"MAX_0678.JPG","LAT":42.80628717394444,"LONG":-1.48057900875},"geometry":{"type":"Point","coordinates":[-1.48057900875,42.80628717394444]}},"MAX_0678.JPG",42.80628717394444,-1.48057900875],[{"type":"Feature","properties":{"index":"MAX_0679.JPG","LAT":42.80626209352778,"LONG":-1.480485691888889},"geometry":{"type":"Point","coordinates":[-1.480485691888889,42.80626209352778]}},"MAX_0679.JPG",42.80626209352778,-1.480485691888889],[{"type":"Feature","properties":{"index":"MAX_0680.JPG","LAT":42.806239392555554,"LONG":-1.480398938972222},"geometry":{"type":"Point","coordinates":[-1.480398938972222,42.806239392555554]}},"MAX_0680.JPG",42.806239392555554,-1.480398938972222],[{"type":"Feature","properties":{"index":"MAX_0681.JPG","LAT":42.80608576844444,"LONG":-1.480477558527778},"geometry":{"type":"Point","coordinates":[-1.480477558527778,42.80608576844444]}},"MAX_0681.JPG",42.80608576844444,-1.480477558527778],[{"type":"Feature","properties":{"index":"MAX_0682.JPG","LAT":42.80610598905555,"LONG":-1.480560121305556},"geometry":{"type":"Point","coordinates":[-1.480560121305556,42.80610598905555]}},"MAX_0682.JPG",42.80610598905555,-1.480560121305556],[{"type":"Feature","properties":{"index":"MAX_0683.JPG","LAT":42.80613008258333,"LONG":-1.480652256222222},"geometry":{"type":"Point","coordinates":[-1.480652256222222,42.80613008258333]}},"MAX_0683.JPG",42.80613008258333,-1.480652256222222],[{"type":"Feature","properties":{"index":"MAX_0684.JPG","LAT":42.806150553749994,"LONG":-1.480748124444444},"geometry":{"type":"Point","coordinates":[-1.480748124444444,42.806150553749994]}},"MAX_0684.JPG",42.806150553749994,-1.480748124444444],[{"type":"Feature","properties":{"index":"MAX_0685.JPG","LAT":42.80617754633333,"LONG":-1.480841184972222},"geometry":{"type":"Point","coordinates":[-1.480841184972222,42.80617754633333]}},"MAX_0685.JPG",42.80617754633333,-1.480841184972222],[{"type":"Feature","properties":{"index":"MAX_0686.JPG","LAT":42.80620411691666,"LONG":-1.480934686083333},"geometry":{"type":"Point","coordinates":[-1.480934686083333,42.80620411691666]}},"MAX_0686.JPG",42.80620411691666,-1.480934686083333],[{"type":"Feature","properties":{"index":"MAX_0687.JPG","LAT":42.806227585333325,"LONG":-1.481025668805556},"geometry":{"type":"Point","coordinates":[-1.481025668805556,42.80622758533333]}},"MAX_0687.JPG",42.806227585333325,-1.481025668805556],[{"type":"Feature","properties":{"index":"MAX_0688.JPG","LAT":42.806248869222216,"LONG":-1.48111716425},"geometry":{"type":"Point","coordinates":[-1.48111716425,42.806248869222216]}},"MAX_0688.JPG",42.806248869222216,-1.48111716425],[{"type":"Feature","properties":{"index":"MAX_0689.JPG","LAT":42.806271705361105,"LONG":-1.481209682027778},"geometry":{"type":"Point","coordinates":[-1.481209682027778,42.806271705361105]}},"MAX_0689.JPG",42.806271705361105,-1.481209682027778],[{"type":"Feature","properties":{"index":"MAX_0690.JPG","LAT":42.80630219808333,"LONG":-1.481301399333333},"geometry":{"type":"Point","coordinates":[-1.481301399333333,42.80630219808333]}},"MAX_0690.JPG",42.80630219808333,-1.481301399333333],[{"type":"Feature","properties":{"index":"MAX_0691.JPG","LAT":42.80632464005555,"LONG":-1.481395291472222},"geometry":{"type":"Point","coordinates":[-1.481395291472222,42.80632464005555]}},"MAX_0691.JPG",42.80632464005555,-1.481395291472222],[{"type":"Feature","properties":{"index":"MAX_0692.JPG","LAT":42.80635162558334,"LONG":-1.481488965472222},"geometry":{"type":"Point","coordinates":[-1.481488965472222,42.80635162558333]}},"MAX_0692.JPG",42.80635162558334,-1.481488965472222],[{"type":"Feature","properties":{"index":"MAX_0693.JPG","LAT":42.806377327027775,"LONG":-1.481581969444445},"geometry":{"type":"Point","coordinates":[-1.481581969444445,42.806377327027775]}},"MAX_0693.JPG",42.806377327027775,-1.481581969444445],[{"type":"Feature","properties":{"index":"MAX_0694.JPG","LAT":42.80640152005555,"LONG":-1.481675547861111},"geometry":{"type":"Point","coordinates":[-1.481675547861111,42.80640152005555]}},"MAX_0694.JPG",42.80640152005555,-1.481675547861111],[{"type":"Feature","properties":{"index":"MAX_0695.JPG","LAT":42.806426873722216,"LONG":-1.481767878472222},"geometry":{"type":"Point","coordinates":[-1.481767878472222,42.806426873722216]}},"MAX_0695.JPG",42.806426873722216,-1.481767878472222],[{"type":"Feature","properties":{"index":"MAX_0696.JPG","LAT":42.80645221361111,"LONG":-1.481858050333333},"geometry":{"type":"Point","coordinates":[-1.481858050333333,42.80645221361111]}},"MAX_0696.JPG",42.80645221361111,-1.481858050333333],[{"type":"Feature","properties":{"index":"MAX_0697.JPG","LAT":42.806476447916666,"LONG":-1.481948567694445},"geometry":{"type":"Point","coordinates":[-1.481948567694445,42.806476447916666]}},"MAX_0697.JPG",42.806476447916666,-1.481948567694445],[{"type":"Feature","properties":{"index":"MAX_0698.JPG","LAT":42.8065034938611,"LONG":-1.482045094111111},"geometry":{"type":"Point","coordinates":[-1.482045094111111,42.80650349386111]}},"MAX_0698.JPG",42.8065034938611,-1.482045094111111],[{"type":"Feature","properties":{"index":"MAX_0699.JPG","LAT":42.80652662333333,"LONG":-1.482135733555556},"geometry":{"type":"Point","coordinates":[-1.482135733555556,42.80652662333333]}},"MAX_0699.JPG",42.80652662333333,-1.482135733555556],[{"type":"Feature","properties":{"index":"MAX_0700.JPG","LAT":42.806550752777774,"LONG":-1.482229253111111},"geometry":{"type":"Point","coordinates":[-1.482229253111111,42.806550752777774]}},"MAX_0700.JPG",42.806550752777774,-1.482229253111111],[{"type":"Feature","properties":{"index":"MAX_0701.JPG","LAT":42.80657656408333,"LONG":-1.482323439972222},"geometry":{"type":"Point","coordinates":[-1.482323439972222,42.80657656408333]}},"MAX_0701.JPG",42.80657656408333,-1.482323439972222],[{"type":"Feature","properties":{"index":"MAX_0702.JPG","LAT":42.806600426555555,"LONG":-1.482410304861111},"geometry":{"type":"Point","coordinates":[-1.482410304861111,42.806600426555555]}},"MAX_0702.JPG",42.806600426555555,-1.482410304861111],[{"type":"Feature","properties":{"index":"MAX_0703.JPG","LAT":42.80662341130555,"LONG":-1.482502382444445},"geometry":{"type":"Point","coordinates":[-1.482502382444445,42.80662341130555]}},"MAX_0703.JPG",42.80662341130555,-1.482502382444445],[{"type":"Feature","properties":{"index":"MAX_0704.JPG","LAT":42.806469092444445,"LONG":-1.482575391777778},"geometry":{"type":"Point","coordinates":[-1.482575391777778,42.806469092444445]}},"MAX_0704.JPG",42.806469092444445,-1.482575391777778],[{"type":"Feature","properties":{"index":"MAX_0705.JPG","LAT":42.806445208916664,"LONG":-1.482492207055556},"geometry":{"type":"Point","coordinates":[-1.482492207055556,42.806445208916664]}},"MAX_0705.JPG",42.806445208916664,-1.482492207055556],[{"type":"Feature","properties":{"index":"MAX_0706.JPG","LAT":42.80642049527778,"LONG":-1.482399845055556},"geometry":{"type":"Point","coordinates":[-1.482399845055556,42.80642049527778]}},"MAX_0706.JPG",42.80642049527778,-1.482399845055556],[{"type":"Feature","properties":{"index":"MAX_0707.JPG","LAT":42.80639611225,"LONG":-1.482306572944444},"geometry":{"type":"Point","coordinates":[-1.482306572944444,42.80639611225]}},"MAX_0707.JPG",42.80639611225,-1.482306572944444],[{"type":"Feature","properties":{"index":"MAX_0708.JPG","LAT":42.80637212183333,"LONG":-1.482210955527778},"geometry":{"type":"Point","coordinates":[-1.482210955527778,42.80637212183333]}},"MAX_0708.JPG",42.80637212183333,-1.482210955527778],[{"type":"Feature","properties":{"index":"MAX_0709.JPG","LAT":42.80634939347222,"LONG":-1.4821142835},"geometry":{"type":"Point","coordinates":[-1.4821142835,42.80634939347222]}},"MAX_0709.JPG",42.80634939347222,-1.4821142835],[{"type":"Feature","properties":{"index":"MAX_0710.JPG","LAT":42.8063238935,"LONG":-1.482028864944445},"geometry":{"type":"Point","coordinates":[-1.482028864944445,42.8063238935]}},"MAX_0710.JPG",42.8063238935,-1.482028864944445],[{"type":"Feature","properties":{"index":"MAX_0711.JPG","LAT":42.806297744944445,"LONG":-1.481935801305556},"geometry":{"type":"Point","coordinates":[-1.481935801305556,42.806297744944445]}},"MAX_0711.JPG",42.806297744944445,-1.481935801305556],[{"type":"Feature","properties":{"index":"MAX_0712.JPG","LAT":42.80627442602778,"LONG":-1.481844059166667},"geometry":{"type":"Point","coordinates":[-1.481844059166667,42.80627442602778]}},"MAX_0712.JPG",42.80627442602778,-1.481844059166667],[{"type":"Feature","properties":{"index":"MAX_0713.JPG","LAT":42.80625034716667,"LONG":-1.48175194325},"geometry":{"type":"Point","coordinates":[-1.48175194325,42.80625034716667]}},"MAX_0713.JPG",42.80625034716667,-1.48175194325],[{"type":"Feature","properties":{"index":"MAX_0714.JPG","LAT":42.80622369141666,"LONG":-1.481653401888889},"geometry":{"type":"Point","coordinates":[-1.481653401888889,42.80622369141666]}},"MAX_0714.JPG",42.80622369141666,-1.481653401888889],[{"type":"Feature","properties":{"index":"MAX_0715.JPG","LAT":42.80619938344444,"LONG":-1.481564316388889},"geometry":{"type":"Point","coordinates":[-1.481564316388889,42.806199383444444]}},"MAX_0715.JPG",42.80619938344444,-1.481564316388889],[{"type":"Feature","properties":{"index":"MAX_0716.JPG","LAT":42.80617546922222,"LONG":-1.481474513333333},"geometry":{"type":"Point","coordinates":[-1.481474513333333,42.80617546922222]}},"MAX_0716.JPG",42.80617546922222,-1.481474513333333],[{"type":"Feature","properties":{"index":"MAX_0717.JPG","LAT":42.806150973916665,"LONG":-1.481380615527778},"geometry":{"type":"Point","coordinates":[-1.481380615527778,42.806150973916665]}},"MAX_0717.JPG",42.806150973916665,-1.481380615527778],[{"type":"Feature","properties":{"index":"MAX_0718.JPG","LAT":42.80612689466666,"LONG":-1.481287929083333},"geometry":{"type":"Point","coordinates":[-1.481287929083333,42.80612689466666]}},"MAX_0718.JPG",42.80612689466666,-1.481287929083333],[{"type":"Feature","properties":{"index":"MAX_0719.JPG","LAT":42.80610145669444,"LONG":-1.481193397666667},"geometry":{"type":"Point","coordinates":[-1.481193397666667,42.80610145669444]}},"MAX_0719.JPG",42.80610145669444,-1.481193397666667],[{"type":"Feature","properties":{"index":"MAX_0720.JPG","LAT":42.80607735894444,"LONG":-1.481102804},"geometry":{"type":"Point","coordinates":[-1.481102804,42.80607735894444]}},"MAX_0720.JPG",42.80607735894444,-1.481102804],[{"type":"Feature","properties":{"index":"MAX_0721.JPG","LAT":42.80605331658333,"LONG":-1.481012042722222},"geometry":{"type":"Point","coordinates":[-1.481012042722222,42.80605331658333]}},"MAX_0721.JPG",42.80605331658333,-1.481012042722222],[{"type":"Feature","properties":{"index":"MAX_0722.JPG","LAT":42.80602805933333,"LONG":-1.480915830916667},"geometry":{"type":"Point","coordinates":[-1.480915830916667,42.80602805933333]}},"MAX_0722.JPG",42.80602805933333,-1.480915830916667],[{"type":"Feature","properties":{"index":"MAX_0723.JPG","LAT":42.806003051805554,"LONG":-1.48082177225},"geometry":{"type":"Point","coordinates":[-1.48082177225,42.806003051805554]}},"MAX_0723.JPG",42.806003051805554,-1.48082177225],[{"type":"Feature","properties":{"index":"MAX_0724.JPG","LAT":42.805979435,"LONG":-1.480733875916667},"geometry":{"type":"Point","coordinates":[-1.480733875916667,42.805979435]}},"MAX_0724.JPG",42.805979435,-1.480733875916667],[{"type":"Feature","properties":{"index":"MAX_0725.JPG","LAT":42.80595467208333,"LONG":-1.480640051361111},"geometry":{"type":"Point","coordinates":[-1.480640051361111,42.80595467208333]}},"MAX_0725.JPG",42.80595467208333,-1.480640051361111],[{"type":"Feature","properties":{"index":"MAX_0726.JPG","LAT":42.80592289908333,"LONG":-1.480553042166667},"geometry":{"type":"Point","coordinates":[-1.480553042166667,42.80592289908333]}},"MAX_0726.JPG",42.80592289908333,-1.480553042166667],[{"type":"Feature","properties":{"index":"MAX_0727.JPG","LAT":42.80560158013888,"LONG":-1.480612736944445},"geometry":{"type":"Point","coordinates":[-1.480612736944445,42.805601580138884]}},"MAX_0727.JPG",42.80560158013888,-1.480612736944445]],"fields":[{"name":"_geojson","type":"geojson","format":"","analyzerType":"GEOMETRY"},{"name":"index","type":"string","format":"","analyzerType":"STRING"},{"name":"LAT","type":"real","format":"","analyzerType":"FLOAT"},{"name":"LONG","type":"real","format":"","analyzerType":"FLOAT"}]}}];
+            const config = {"version":"v1","config":{"visState":{"filters":[],"layers":[{"id":"j6v3uvu","type":"geojson","config":{"dataId":"jfhqg2r5b","label":"puntos","color":[255,203,153],"highlightColor":[252,242,26,255],"columns":{"geojson":"_geojson"},"isVisible":true,"visConfig":{"opacity":0.8,"strokeOpacity":0.8,"thickness":0.5,"strokeColor":null,"colorRange":{"name":"Global Warming","type":"sequential","category":"Uber","colors":["#5A1846","#900C3F","#C70039","#E3611C","#F1920E","#FFC300"]},"strokeColorRange":{"name":"Global Warming","type":"sequential","category":"Uber","colors":["#5A1846","#900C3F","#C70039","#E3611C","#F1920E","#FFC300"]},"radius":10,"sizeRange":[0,10],"radiusRange":[0,50],"heightRange":[0,500],"elevationScale":5,"enableElevationZoomFactor":true,"stroked":false,"filled":true,"enable3d":false,"wireframe":false},"hidden":false,"textLabel":[{"field":null,"color":[255,255,255],"size":18,"offset":[0,0],"anchor":"start","alignment":"center"}]},"visualChannels":{"colorField":null,"colorScale":"quantile","strokeColorField":null,"strokeColorScale":"quantile","sizeField":null,"sizeScale":"linear","heightField":null,"heightScale":"linear","radiusField":null,"radiusScale":"linear"}}],"interactionConfig":{"tooltip":{"fieldsToShow":{"jfhqg2r5b":[{"name":"index","format":null},{"name":"LAT","format":null},{"name":"LONG","format":null}]},"compareMode":false,"compareType":"absolute","enabled":true},"brush":{"size":0.5,"enabled":false},"geocoder":{"enabled":false},"coordinate":{"enabled":false}},"layerBlending":"normal","splitMaps":[],"animationConfig":{"currentTime":null,"speed":1}},"mapState":{"bearing":0,"dragRotate":false,"latitude":42.80921130607383,"longitude":-1.4851633127677757,"pitch":0,"zoom":14.644009478727085,"isSplit":false},"mapStyle":{"styleType":"dark","topLayerGroups":{},"visibleLayerGroups":{"label":true,"road":true,"border":false,"building":true,"water":true,"land":true,"3d building":false},"threeDBuildingColor":[9.665468314072013,17.18305478057247,31.1442867897876],"mapStyles":{}}}};
+
+            const loadedData = keplerGl.KeplerGlSchema.load(
+              datasets,
+              config
+            );
+
+            store.dispatch(keplerGl.addDataToMap({
+              datasets: loadedData.datasets,
+              config: loadedData.config,
+              options: {
+                centerMap: false
+              }
+            }));
+          }(KeplerGl, store))
+        </script>
+      </body>
+    </html>
+  
