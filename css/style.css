@@ -1,0 +1,102 @@
+/*
+Author: Jabiertzo 
+#IDs: son únicos para cada uno. No se pueden reusar. Sólo uno por página
+.classes: puede haber múltiples clases en una página
+*/
+
+
+
+/*----------------------------------------------------------------------------- 
+=01 BASE STYLES 
+-----------------------------------------------------------------------------*/
+
+/* Box Model Hack. Estilos por defecto para cuando no se establecen estilos */
+* {
+     -moz-box-sizing: border-box; /* Firexfox */
+     -webkit-box-sizing: border-box; /* Safari/Chrome/iOS/Android */
+     box-sizing: border-box; /* IE */
+}
+
+/* Clear Class. Para que deje de aplicarse el float*/
+.clear {
+	clear: both;
+}
+/* img{
+     float: right; Imagen a la derecha. Se aplicaría a todas las imágenes
+}  */
+
+.alignleft{
+     float: left;
+     margin: 0 15px 15px 0; /*Como las agujas del reloj: arriba, dcha, abajo, izda*/
+}
+
+.black{
+     color: black;
+}
+.red{
+     color: red;
+}
+
+
+.alignright{
+     float: right;
+     margin: 0 0 15px 15px ; /*Como las agujas del reloj: arriba, dcha, abajo, izda*/
+}
+/*----------------------------------------------------------------------------- 
+=02 LAYOUT 
+-----------------------------------------------------------------------------*/
+h1{
+     display: inline; /*Para que se muestre inline en lugar de su comportamiento por defecto*/
+                         /*También existe la opción inline-block*/
+}
+
+.mask1 {
+     clip-path: circle(70px at center); /* Para ponerle una plantillita circular a la imagen */
+     display: block;
+   }
+   
+
+#container {
+     width: 1000px; /* tamaño contenedor. Sus partes no deberían superar este tamaño (700+300 px) */
+     margin: 0 auto 0 auto ; /* Para centrar el contenido. El primero cero es para
+               la parte superior e inferior. El segundo cero es para izquierda derecha*/
+}
+
+#header {
+     padding: 50px;
+}
+
+#main {
+     background-color: whitesmoke;
+     padding: 50px;
+     width: 700px; /* 700px de los 1000 que ocupa el contenedor. */
+     float: left; /*  */
+}
+
+#sidebar {
+     background-color: white;
+     width: 300px; /*Si el tamaño fuera superior al del contenedor no cabría y quedaría abajo*/
+     float: left;
+     padding: 50px;
+}
+
+#footer {
+     background-color: palegreen;
+     padding: 50px;
+
+}
+
+body { /*Para el cuerpo de la página*/
+     background: url('../images/notebook.png'); /* add a fallback color of #d6d6d6 */
+     color: #000000;
+     font-family: 'Lato', sans-serif;
+     line-height: 1.7; /* line-height is unit-less */
+     font-size: 100%;
+    }  
+
+
+hr.solid { /*Para añadir una barra sólida con
+     <hr class="solid">
+                         */
+     border-top: 3px solid #bbb;
+}
