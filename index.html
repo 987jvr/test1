@@ -1,74 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Happy Birthday Alexis!</title>
+    <meta name="description" content="Happy Birthday Alexis!">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+     <!-- con el media="(max-width:630px) estamos diciendo:
+    aplica ese CSS sólo si se cumple la condición de que anchura máxima 630 px-->
+    <link rel="stylesheet" href="css/small.css" media="(max-width:630px)">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,700|Lobster' rel='stylesheet' type='text/css'>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Chris Castiglione, and the One Month team">
-		<title>Monthly Resolutions by Chris Castiglione</title>
-		<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" href="css/normalize.css">
-		<link rel="stylesheet" href="css/style.css">
-	</head>
-	<body>
-		
-		<div id='container'> 
-			<div id='header'> <!-- div, de dividir la página en trozos -->
-				<h1 class="black">Monthly Resolutions </h1>
-				<p>Dreaming aloud: 30 days at a time</p>
-			</div>
 
-			<div id='main'>
-				<h2 class="black">Learn to Surf</h2>  <!-- Con el class le aplicamos propiedades predefinidias 
-												en el CSS -->
-				<img  src='images/book.jpg' alt='gato'>
-				<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-				Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
-				when an unknown printer took a galley of type and scrambled it to make a type specimen book. 
-				It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. 
-				It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, 
-				and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-				
-				<hr class="solid">
 
-				<h2 class="black">Read everything</h2>
-				<img  src='images/surfing.jpg' alt='surf'>
+  </head>
+  <body>
+    <div class="container">  <!-- Para dividir el cuerpo en trozos class 1 -->
+      <div class="hero">
+        <img  src='images/hero-image.png' >
+      </div>
+      
+      <section class="intro">  <!--Section: div. Two sections in a document: -->
+        <h1>Alexis's Birthday Party!</h1>
+        
+        <aside class="right"> <!-- Aside es un tipo de div. Display some content aside from the content it is placed in:-->
+          <img  src='images/bubble-bottle.png'>
+        </aside>
+        
+        <p>Alexis' birthday is coming up! We hope you intend to come to our magical party for a most lovely friend. There will be 99 bottles of wine, a dozen in attendance, and if we're lucky, Dr. Bubbles (in special appearance)!</p>
+        <p>You know when to go out, you know when to stay in. Come to Schiller's this Thursday, and party like it's Berlin!</p>
+      </section>
 
-				<p>orem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-				
-				<hr class="solid">
+      <section class="contact">  <!-- class 2 -->
+        <h2>Domingo, 20 de marzo</h2>
+        
+        <aside class="left">
+          <img   src='images/unicorn.png' >
+        </aside>
 
-			</div>
-
-			<div id="sidebar">
-				<h3>Barra lateral</h3>
-				<img class="mask1" src='images/chris-castiglione.jpg' alt='author'>
-				<p>Este blog fue creado por TPM</p>
-
-				<h3>Follow me</h3>
-					<ul>
-						<li> <a class="autor" href="https://twitter.com/#!/mewantcookie"> Twitter </a>	</li>
-						<li> <a class="autor" href="https://twitter.com/#!/mewantcookie"> FB </a> </li>
-						<li> <a class="autor" href="https://twitter.com/#!/mewantcookie"> Instragram </a> </li>
-					</ul>
-				<h3>Quote of the day</h3>
-				<blockquote>
-					<i>"Al que madruga dios le ayuda"</i>
-				</blockquote>
-				-Laputa	 
-
-			
-			</div> <!-- #sidebar. Etiquetar los div para saber dónde empiezan ya caban las cosas-->
-			<div class="clear"></div>	 <!--El class clear al que hace referencia está en el CSS. 
-										Para que se deje de apliar el float
-									  y no se "amontonen las cosas. Stop floating things
-									  Float vs. Clear" -->
-			<div id='footer'>
-				<p>Creado por <a href="http://google.es"> tal y cual</a> </p>
-			</div>
-		</div>
-
-	
-	</body>
+        <p>Starts promptly at <time>20:00</time></p>
+        <p>Schiller's Liquor Bar!<br>131 Rivington St<br>New York, NY 10002</p>
+        <p>¿Vienes? manda un correo a <a href="mailto:987@gmail.com">987@gmail.com</a></p>
+      </section>
+      <iframe width='100%' height='400px' src="https://api.mapbox.com/styles/v1/lygsimqp/cky8spdx1aloq14rumm8vull7.html?title=false&access_token=pk.eyJ1IjoibHlnc2ltcXAiLCJhIjoiY2t4ZzIxdTBlMHA5eDJvbnBwajkwMjh4aSJ9.0DVYx2-5mOvAhHTvvQMjzg&zoomwheel=false#7.66/42.928/-1.532" title="Outdoors" style="border:none;"></iframe>    </div>
+  </body>
 </html>
+
+ <!--Why and when should we use an aside?
+In HTML5, we were given new elements that allowed us to give more sophisticated "meaning" to our code. That classifications more specific than <div> makes your code easier to read. Thus, we now have elements like the header, footer, section, and aside.
+
+The aside element is used when we have content that is related to our main content, but can be considered separate from that content. This would be very similar to creating a div with a class of "aside." By streamlining this process with a built-in element, it's that much easier to "say" exactly what we mean with our code and have it's meaning be immediately evident to both our fellow humans and robots. 
+
+Don't worry TOO MUCH about the "semantic meaning" of your code. It's a fiercely debated topic and it does have some benefits. It's much more important to practice writing code than to worry if we're being semantic enough.
+
+Tip: You can always use the Web Inspector to figure out what's going on. -->
