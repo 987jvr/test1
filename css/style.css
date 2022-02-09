@@ -4,12 +4,13 @@
 
 
 body {
-  background-color: #DDD;
-  background-image: url('images/space-background.png');
+  background-image: url('../images/background.jpg'); /*OJO: había que moverse entre las carpetas 
+                                            ya que estábamos dentro de la carpeta CSS*/
   font-family: 'Open Sans', arial, sans-serif;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
-
-
 
 * {
   -moz-box-sizing: border-box; /* Firefox */
@@ -41,10 +42,14 @@ ul li {
  * Heading Styles
 */
 
+html{
+  font-size: 100%;
+}
+
 
 h1, h2 {
-  font-family: 'Lobster', cursive;
-  color: #e22f8f;
+  font-family: 'Zen Kaku Gothic Antique', sans-serif;
+  color: #ec7eb9;
   text-align: center;
   margin-bottom: 32px;
 }
@@ -77,9 +82,11 @@ h2 {
 }
 
 
-section.intro, section.contact{
+section.intro, section.contact,section.map, section.credits{
   background: white;
   padding: 40px;
+  text-align: justify;
+  font-family: 'Zen Kaku Gothic Antique', sans-serif;
 }
 
 section{
@@ -96,6 +103,8 @@ section{
 aside.left {
   float: left;
   padding: 10px;
+  
+  
 }
 
 aside.right{
@@ -106,4 +115,8 @@ aside.right{
 
 aside{
   margin-right: 30px;
+}
+
+.container section:nth-child(even){   /*Para que se le apliquen propiedades alternativamente a los contenedores*/
+  background-color: lightblue;
 }
