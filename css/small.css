@@ -1,0 +1,17 @@
+.container{
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  
+}
+.hero img { /* Si solo ponemos hero, sin hacer referencia al img, 
+  la imagen deja de ser "responsiva"*/
+  width: 100%;
+  border-radius: 0; /*Para NO redondear las esquinas*/
+
+}
+
+aside.right, aside.left {
+  text-align: center;
+  float: inherit;
+}
