@@ -223,7 +223,6 @@
               }
             }));
           }(KeplerGl, store))
-		  alert('Sitio web en pruebas')
         </script>
       </body>
     </html>
