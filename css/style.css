@@ -1,32 +1,142 @@
+/*
+ * General Styles
+*/
+
+
+body {
+  /*background-image: url('../images/background.jpg'); /*OJO: había que moverse entre las carpetas 
+                                            ya que estábamos dentro de la carpeta CSS*/
+  font-family: 'Open Sans', arial, sans-serif;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: #007acc;
+}
+
 * {
-  -moz-box-sizing: border-box; /* Firexfox */
+  -moz-box-sizing: border-box; /* Firefox */
   -webkit-box-sizing: border-box; /* Safari/Chrome/iOS/Android */
   box-sizing: border-box; /* IE */
 }
 
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
 
-body {
-  margin: 0;
-  background: rgb(245, 245, 245);
-  font-family: 'Open Sans', arial, sans-serif;
-  font-size: 0.875rem;
-  color: rgb(86, 90, 92);
+p {
+  font-size: 16px;
+  line-height: 1.75;
+  margin-bottom: 28px;
+}
+
+strong {
+  font-weight: bold;
+}
+
+ul li {
+  list-style: decimal inside;
+}
+
+/*
+ * Heading Styles
+*/
+
+html{
+  font-size: 100%;
 }
 
 
-.map {
-  width: 50%;
-  height: 50%;
-  background: red;
-}
-
-.map2 {
-  width: 50%;
-  height: 50%;
-  background: blue;
+h1, h2 {
+  font-family: 'Zen Kaku Gothic Antique', sans-serif;
+  color: #000000;
+  text-align: center;
+  margin-bottom: 32px;
 }
 
 h1 {
-  font-size: 1.375rem; /* 22px / 16px */
-  color: #666A6C;
+
+  font-size: 40px;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+/*Acciones cuando se hace click
+se le ha añadido a onclick="handleClick(this)"  */
+
+
+
+h1 .node {
+  font-family: monospace;
+}
+
+
+/*Animaciones cuando se pasa el cursor por encima. Puede requerir atributos específicos
+que los hagan compatible con navegadores antiguos */
+/*
+h1:hover ,h2:hover{
+  color: rgb(255, 0, 85);
+  transition: all 200ms ease-in-out;
+}
+
+p:hover {
+  font-weight: bold;
+  transition: all 200ms step-end  ;
+}
+
+*/
+
+/*
+ * Container Styles
+*/
+
+.container {
+  width: 90% ;
+  margin: 100px auto;
+  background: orange; /*Lo quitamos para que al redondear las esquinas no muestre nada debajo*/ 
+}
+
+
+
+
+section.intro, section.contact,section.map, section.credits{
+  background: white;
+  padding: 40px;
+  text-align: justify;
+  font-family: 'Zen Kaku Gothic Antique', sans-serif;
+}
+
+section{
+  padding: 50px;
+}
+
+.contact{
+  background: lightcoral;
+  padding: 50px;
+
+}
+
+
+aside.left {
+  float: left;
+  padding: 10px;
+  
+  
+}
+
+aside.right{
+  float: right;
+  padding: 10px;
+
+}
+
+aside{
+  margin-right: 30px;
+}
+
+.container section:nth-child(odd){   /*Para que se le apliquen propiedades alternativamente a los contenedores*/
+  background-color: #d3e5ef;
 }
