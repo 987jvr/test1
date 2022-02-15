@@ -17,7 +17,7 @@
     <script>
 
         // Establecemos un layout simplificado apto para hacer demostraciones de controles.
-        //SITNA.Cfg.layout = "layout/ctl-container";
+        SITNA.Cfg.layout = "layout/ctl-container";
         // Añadimos el control de capas cargadas en la primera posición.
         SITNA.Cfg.controls.workLayerManager = {
             div: "slot1"
@@ -40,9 +40,9 @@
                 {
                     id: "sismica",
                     title: "Información sísmica y volcánica",
-                    type: SITNA.Consts.layerType.WMS,
-                    url: "//www.ign.es/wms-inspire/geofisica",
-                    layerNames: ["Ultimos10dias", "Ultimos30dias", "Ultimos365dias"],
+                    type: SITNA.Consts.layerType.PNG,
+                    url: "http://localhost:8080/geoserver/tiger/wms",
+                    layerNames: "tiger:tiger_roads",
                     hideTree: false
                 }
             ]
@@ -117,7 +117,7 @@
                         }
                                                 });
                 //centrar el mapa en el marcador
-                map.zoomToMarkers();
+                //map.zoomToMarkers();
         });
     </script>
 </body>    
