@@ -6,7 +6,7 @@
 	<SimpleField name="LAT" type="float"></SimpleField>
 	<SimpleField name="LONG" type="float"></SimpleField>
 </Schema>
-<Folder><name>puntos_kml</name>
+<Folder><name>Fotocentros de las imágenes</name>
   <Placemark>
 	<ExtendedData><SchemaData schemaUrl="#puntos_kml">
 		<SimpleData name="index">MAX_0612.JPG</SimpleData>

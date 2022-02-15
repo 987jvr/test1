@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<link rel="stylesheet" href="examples.css" />
-<link rel="stylesheet" href="css/reset.css">
-<link rel="stylesheet" href="css/IDENA.css">
+    <title>IDENA feat GTF V1</title>
 
-<link rel="stylesheet" href="css/small.css" media="(max-width:630px)">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="examples.css" />
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/IDENA.css">
+
+    <link rel="stylesheet" href="css/small.css" media="(max-width:630px)">
 
 </head>
 <body>
@@ -39,19 +41,31 @@
 
         ]
     });
-       
-    
-        map.addMarker([612233,  4736529], {
-            cssClass: "kiosko",
-            width: 40,
-            height: 40,
-            data: {
-                "Nombre": "GreenTech Factory",
-                "Sitio web": "https://www.greentechfactory.es/",
-                "Teléfono":"691 81 43 93"
-            },
-            showPopup: false
-        });
+
+    map.loaded(function (){
+
+    // Añadir marcadores al grupo "Marcadores colgantes" 
+    // cuyo icono se ancle al punto en el centro hacia abajo. 
+    // Establecer un icono adecuado.
+    var markerOptions ={
+        group:"Marcadores colgantes",
+        url:"data/location-and-map/png-64/location-info-64x64-1214132.png",
+        anchor:[0.5,0]
+    }
+    map.addMarker([620233,  4736529],markerOptions);
+    map.addMarker([612233,  4736529],{
+        cssClass: "kiosko",
+        width: 40,
+        height: 40,
+        data: {
+            "Nombre": "GreenTech Factory",
+            "Sitio web": "https://www.greentechfactory.es/",
+            "Teléfono":"691 81 43 93"
+            }
+                                    });
+    //centrar el mapa en el marcador
+    //map.zoomToMarkers();
+    });
     
 
 </script>

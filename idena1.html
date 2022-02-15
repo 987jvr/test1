@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>IDENA feat GTF V1</title>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="/examples/examples.css" >
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/IDENA.css">
+
+    <link rel="stylesheet" href="css/small.css" media="(max-width:630px)">
+
+</head>
+<body>
+    <script src="//sitna.tracasa.es/api/" type="text/javascript"></script>
+    <div id="mapa"></div>
+    <script>
+
+        // Establecemos un layout simplificado apto para hacer demostraciones de controles.
+        //SITNA.Cfg.layout = "layout/ctl-container";
+        // Añadimos el control de capas cargadas en la primera posición.
+        SITNA.Cfg.controls.workLayerManager = {
+            div: "slot1"
+        };
+        // Establecemos un proxy porque se hacen peticiones a otro dominio.
+        SITNA.Cfg.proxy = "proxy/proxy.ashx?";
+        // Añadimos en la segunda posición el catálogo de capas con dos servicios.
+        SITNA.Cfg.controls.layerCatalog = {
+            div: "slot2",
+            enableSearch: true,
+            layers: [
+                {
+                    id: "idena",
+                    title: "IDENA",
+                    hideTitle: true,
+                    type: SITNA.Consts.layerType.WMS,
+                    url: "//idena.navarra.es/ogc/wms",
+                    hideTree: false
+                },
+                {
+                    id: "sismica",
+                    title: "Información sísmica y volcánica",
+                    type: SITNA.Consts.layerType.WMS,
+                    url: "//www.ign.es/wms-inspire/geofisica",
+                    layerNames: ["Ultimos10dias", "Ultimos30dias", "Ultimos365dias"],
+                    hideTree: false
+                }
+            ]
+        };
+
+        var map = new SITNA.Map("mapa",{
+            workLayers: [
+                {
+                id: "wms",
+                title: "Camino de Santiago",
+                type: SITNA.Consts.layerType.WMS,
+                url: "//idena.navarra.es/ogc/wms",
+                layerNames: "IDENA:PATRIM_Lin_CaminoSantR",
+                format: SITNA.Consts.mimeType.PNG
+                },
+                {
+                id: "capa_kml",
+                cluster:{
+                    distance:50,
+                    animate:true,
+                    styles: {
+                        point: {
+                            fillColor: "#f90",
+                            fillOpacity: .5,
+                            strokeColor: "#c60",
+                            strokeWidth: 2,
+                            fontColor: "#f90"
+                        }
+                    }
+                },
+                styles: {
+                    point: {
+                        strokeColor: "#000ff",
+                        strokeWidth: 2,
+                        fillColor: "#587c0c",
+                        fillOpacity: 0.2,
+                        radius: 5
+                    }
+                },
+                title: "Fotocentros",
+                type: SITNA.Consts.layerType.KML,
+                url: "puntos.kml"
+                },
+                {
+                id: "capa1_kml",
+                title: "Zonas de búsqueda",
+                type: SITNA.Consts.layerType.KML,
+                url: "zonas1.kml"
+                }
+
+            ]}); 
+        //cuando todo esté cargado proceder a trabajar con el mapa
+        map.loaded(function (){
+
+                // Añadir marcadores al grupo "Marcadores colgantes" 
+                // cuyo icono se ancle al punto en el centro hacia abajo. 
+                // Establecer un icono adecuado.
+                var markerOptions ={
+                    group:"Marcadores colgantes",
+                    url:"data/location-and-map/png-64/location-info-64x64-1214132.png",
+                    anchor:[0.5,0]
+                }
+                map.addMarker([620233,  4736529],markerOptions);
+                map.addMarker([612233,  4736529],{
+                    cssClass: "kiosko",
+                    width: 40,
+                    height: 40,
+                    data: {
+                        "Nombre": "GreenTech Factory",
+                        "Sitio web": "https://www.greentechfactory.es/",
+                        "Teléfono":"691 81 43 93"
+                        }
+                                                });
+                //centrar el mapa en el marcador
+                map.zoomToMarkers();
+        });
+    </script>
+</body>    
+</html>
