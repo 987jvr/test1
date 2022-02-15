@@ -1,0 +1,28 @@
+/*
+ * General Styles
+*/
+
+
+body {
+    /*background-image: url('../images/background.jpg'); /*OJO: había que moverse entre las carpetas 
+                                              ya que estábamos dentro de la carpeta CSS*/
+    font-family: 'Open Sans', arial, sans-serif;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: #007acc;
+  }
+  
+  * {
+    -moz-box-sizing: border-box; /* Firefox */
+    -webkit-box-sizing: border-box; /* Safari/Chrome/iOS/Android */
+    box-sizing: border-box; /* IE */
+  }
+
+  .container {
+    width: 90% ;
+    margin: 100px auto;
+    background: orange; /*Lo quitamos para que al redondear las esquinas no muestre nada debajo*/ 
+  }
+  
+  

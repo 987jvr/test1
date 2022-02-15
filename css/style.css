@@ -140,3 +140,17 @@ aside{
 .container section:nth-child(odd){   /*Para que se le apliquen propiedades alternativamente a los contenedores*/
   background-color: #d3e5ef;
 }
+
+
+.mapa{
+  background-color: #007acc;
+  padding: 50px;
+  border-radius: 5px;
+}
+
+section.idena{
+  padding: 10px;
+  background-color: pink;
+  height: 800;
+  width: 100%;
+}
