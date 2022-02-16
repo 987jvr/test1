@@ -23,7 +23,7 @@
             div: "slot1"
         };
         // Establecemos un proxy porque se hacen peticiones a otro dominio.
-        SITNA.Cfg.proxy = "proxy/proxy.ashx?";
+        SITNA.Cfg.proxy = "/proxy/proxy.ashx";
         // Añadimos en la segunda posición el catálogo de capas con dos servicios.
         SITNA.Cfg.controls.layerCatalog = {
             div: "slot2",
@@ -39,10 +39,10 @@
                 },
                 {
                     id: "sismica",
-                    title: "Información sísmica y volcánica",
-                    type: SITNA.Consts.layerType.PNG,
-                    url: "http://localhost:8080/geoserver/tiger/wms",
-                    layerNames: "tiger:tiger_roads",
+                    title: "GEO_HOSTIAS",
+                    type: SITNA.Consts.layerType.WMS,
+                    url: "http://localhost:8080/geoserver/ows",
+                    layerNames: "delorean:zonas_busqueda",
                     hideTree: false
                 }
             ]
@@ -113,7 +113,8 @@
                     data: {
                         "Nombre": "GreenTech Factory",
                         "Sitio web": "https://www.greentechfactory.es/",
-                        "Teléfono":"691 81 43 93"
+                        "Teléfono":"691 81 43 93",
+                        "Imagen adjunta__image_200_auto": "https://upload.wikimedia.org/wikipedia/commons/9/90/Pamplona_-_Monumento_al_Encierro.jpg",
                         }
                                                 });
                 //centrar el mapa en el marcador
