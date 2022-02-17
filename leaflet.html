@@ -38,8 +38,8 @@
 		zoom: 3
 	});
 
-	var wmsLayer = L.tileLayer.wms('http://localhost:8080/geoserver/delorean/wms?', {
-		layers: 'zonas_busqueda'
+	var wmsLayer = L.tileLayer.wms('http://159.89.97.149:8080/geoserver/ows?service=wms&version=1.1.1&request=GetCapabilities', {
+		//layers: 'zonas_busqueda'
 	}).addTo(map);
 
 </script>
