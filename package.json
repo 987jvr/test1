@@ -1,0 +1,13 @@
+{
+    "name": "wms-image",
+    "dependencies": {
+      "ol": "6.12.0"
+    },
+    "devDependencies": {
+      "parcel": "^2.0.0"
+    },
+    "scripts": {
+      "start": "live-server --port=8081"
+
+    }
+  }
