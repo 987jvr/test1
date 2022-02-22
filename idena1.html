@@ -4,12 +4,14 @@
     <title>IDENA feat GTF V1</title>
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!--
+        <link rel="stylesheet" href="css/small.css" media="(max-width:630px)">
+        <link rel="stylesheet" href="css/IDENA.css">
+        <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="/examples/examples.css" >
-    <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/IDENA.css">
 
-    <link rel="stylesheet" href="css/small.css" media="(max-width:630px)">
-
+    -->
 </head>
 <body>
     <script src="//sitna.tracasa.es/api/" type="text/javascript"></script>
@@ -58,40 +60,7 @@
                 layerNames: "IDENA:PATRIM_Lin_CaminoSantR",
                 format: SITNA.Consts.mimeType.PNG
                 },
-                {
-                id: "capa_kml",
-                cluster:{
-                    distance:50,
-                    animate:true,
-                    styles: {
-                        point: {
-                            fillColor: "#f90",
-                            fillOpacity: .5,
-                            strokeColor: "#c60",
-                            strokeWidth: 2,
-                            fontColor: "#f90"
-                        }
-                    }
-                },
-                styles: {
-                    point: {
-                        strokeColor: "#000ff",
-                        strokeWidth: 2,
-                        fillColor: "#587c0c",
-                        fillOpacity: 0.2,
-                        radius: 5
-                    }
-                },
-                title: "Fotocentros",
-                type: SITNA.Consts.layerType.KML,
-                url: "puntos.kml"
-                },
-                {
-                id: "capa1_kml",
-                title: "Zonas de búsqueda",
-                type: SITNA.Consts.layerType.KML,
-                url: "zonas1.kml"
-                }
+                
 
             ]}); 
         //cuando todo esté cargado proceder a trabajar con el mapa
