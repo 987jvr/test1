@@ -1,6 +1,12 @@
 {
-    "scripts": {
-      "start": "live-server --port=8081"
-
-    }
+  "name": "la vaina loca FEB2022",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "live-server --port=8081"
+  },
+  "keywords": [],
+  "author": "JVR",
+  "dependencies": {
+    "jquery": "^3.6.0"
   }
+}
